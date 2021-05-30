@@ -24,6 +24,7 @@ const sousChefABI = JSON.parse(
 );
 
 const sousChefCombinedABI = require('./abi/sousChefCombined.json');
+const { json } = require("express");
 
 module.exports = class pancake {
   constructor(cache, priceOracle, tokenCollector, farmCollector, cacheManager) {
@@ -381,6 +382,7 @@ module.exports = class pancake {
 
         callsPromises.push({
           userInfo: contract.methods.userInfo(address),
+          FullSharePrice: contract.methods.getPricePerFullShare(),
           id: farm.id
         });
       }
@@ -399,14 +401,41 @@ module.exports = class pancake {
           ? 10 ** this.tokenCollector.getDecimals(farm.extra.transactionToken)
           : 1e18;
 
-        var pos = 0  
-        if(farm.id.startsWith('pancake_auto') && c.userInfo[2]){
-          pos = 2
-        }
+
+        let sharePrice = call.FullSharePrice /  1e18;
+        let shareUserAmount = call.userInfo[0] / 1e18;
+        let totalReward = (shareUserAmount * sharePrice) - (call.userInfo[2] / 1e18);        
+        let totalStake = (call.userInfo[2] / 1e18) + totalReward;
+
+        /*
+        console.log("*****************************************************************")
+        console.log("Share Price: " + sharePrice)
+        console.log("shareUserAmount: " + shareUserAmount)
+        console.log("reward: " + totalReward)
+        console.log("TotalStake: " + totalStake)
+        console.log("*****************************************************************")
+        */
+
+        /*
+        var a = 1075898112348393983 / Math.pow(10, 18);
+        console.log("price share: " + a);
+
+        var b = 2155093960408199773558 / Math.pow(10, 18);
+        console.log("user shares: " + b);
+
+        var c = 2284270872320654669234 / Math.pow(10, 18);
+        console.log("cakes staked: " + c)
+
+        var reward = (b * a) - c;
+        console.log("consegui: " + reward)
+        var total = c + reward
+        console.log("total: " + total)
+        */
 
         result.deposit = {
           symbol: farm.symbol,
-          amount: call.userInfo[pos] / decimals
+          amount: totalStake,
+          reward: totalReward
         };
 
         let address1 = this.getAddress(farm.extra.transactionToken);

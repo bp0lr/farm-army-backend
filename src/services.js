@@ -75,7 +75,7 @@ let polaris;
 let panther;
 
 const _ = require("lodash");
-const fs = require("fs");
+const fs = require("fs-extra");
 
 module.exports = {
   Utils: require("./utils"),
@@ -90,7 +90,9 @@ module.exports = {
       return database;
     }
 
-    const myDb = Sqlite("db.db");
+    fs.ensureDirSync(`./database`);
+    const myDb = Sqlite(`./database/db.db`);
+
     myDb.pragma("journal_mode = WAL");
     myDb.pragma("SYNCHRONOUS = 1;");
     myDb.pragma("LOCKING_MODE = EXCLUSIVE;");
