@@ -401,7 +401,6 @@ module.exports = class pancake {
           ? 10 ** this.tokenCollector.getDecimals(farm.extra.transactionToken)
           : 1e18;
 
-<<<<<<< HEAD
 
         let sharePrice = call.FullSharePrice /  1e18;
         let shareUserAmount = call.userInfo[0] / 1e18;
@@ -432,12 +431,6 @@ module.exports = class pancake {
         var total = c + reward
         console.log("total: " + total)
         */
-=======
-        var pos = 0  
-        if(farm.id.startsWith('pancake_auto') && call.userInfo[2]){
-          pos = 2
-        }
->>>>>>> master
 
         result.deposit = {
           symbol: farm.symbol,
